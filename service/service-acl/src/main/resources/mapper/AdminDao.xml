@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.dao.AdminDao">
+  <resultMap id="BaseResultMap" type="com.atguigu.entity.Admin">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="head_url" jdbcType="VARCHAR" property="headUrl" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="is_deleted" jdbcType="TINYINT" property="isDeleted" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, username, `password`, `name`, phone, head_url, description, create_time, update_time, 
+    is_deleted
+  </sql>
+  <!-- 用于select查询公用抽取的列 -->
+  <sql id="columns">
+    select id,username,password,name,phone,head_url,description,create_time,update_time,is_deleted
+  </sql>
+  <sql id="findPageWhere">
+    <where>
+      <if test="username != null and username != ''">
+        and username like CONCAT('%',#{username},'%')
+      </if>
+      <if test="name != null and name != ''">
+        and name like CONCAT('%',#{name},'%')
+      </if>
+      <if test="phone != null and phone != ''">
+        and phone like CONCAT('%',#{phone},'%')
+      </if>
+      <if test="createTimeBegin != null and createTimeBegin != ''">
+        and create_time >= #{createTimeBegin}
+      </if>
+      <if test="createTimeEnd != null and createTimeEnd != ''">
+        and create_time &lt;= #{createTimeEnd}
+      </if>
+      and is_deleted = 0
+    </where>
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+
+    from acl_admin
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="getById" resultType="com.atguigu.entity.Admin">
+    <include refid="columns"/>
+    from acl_admin
+    where id=#{id}
+  </select>
+  <select id="findPage" resultType="com.atguigu.entity.Admin">
+    <include refid="columns" />
+    from acl_admin
+    <include refid="findPageWhere"/>
+    order by id desc
+  </select>
+  <select id="findAll" resultType="com.atguigu.entity.Admin">
+    <include refid="columns" />
+    from acl_admin
+    where
+    is_deleted = 0
+  </select>
+  <select id="getByUsername" resultType="com.atguigu.entity.Admin">
+    <include refid="columns" />
+    from acl_admin
+    where
+    username = #{username}
+    and is_deleted = 0
+
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from acl_admin
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <update id="delete">
+    update acl_admin set
+    update_time = now(),is_deleted=1 where id=#{id}
+
+
+  </update>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+    insert into acl_admin (
+      id ,
+      username ,
+      password ,
+      name ,
+      phone ,
+      head_url ,
+      description
+    ) values (
+               #{id} ,
+               #{username} ,
+               #{password} ,
+               #{name} ,
+               #{phone} ,
+               #{headUrl} ,
+               #{description}
+             )
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.atguigu.entity.Admin" useGeneratedKeys="true">
+    insert into acl_admin
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="username != null">
+        username,
+      </if>
+      <if test="password != null">
+        `password`,
+      </if>
+      <if test="name != null">
+        `name`,
+      </if>
+      <if test="phone != null">
+        phone,
+      </if>
+      <if test="headUrl != null">
+        head_url,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="isDeleted != null">
+        is_deleted,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="username != null">
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="headUrl != null">
+        #{headUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDeleted != null">
+        #{isDeleted,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.atguigu.entity.Admin">
+    update acl_admin
+    <set>
+      <if test="username != null">
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        `password` = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        `name` = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="headUrl != null">
+        head_url = #{headUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDeleted != null">
+        is_deleted = #{isDeleted,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="update">
+    update acl_admin set
+    <if test="username != null and username != '' ">
+        username=#{username},
+    </if>
+    <if test="password != null and password != '' ">
+      password=#{password},
+    </if>
+    <if test="name != null and name != '' ">
+      name=#{name},
+    </if>
+    <if test="phone != null and phone != '' ">
+      phone=#{phone},
+    </if>
+    <if test="headUrl != null and headUrl != '' ">
+      head_url=#{headUrl},
+    </if>
+    <if test="description != null and description != '' ">
+      description=#{description},
+    </if>
+     update_time = now()
+    where id=#{id}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.atguigu.entity.Admin">
+    update acl_admin
+    set username = #{username,jdbcType=VARCHAR},
+      `password` = #{password,jdbcType=VARCHAR},
+      `name` = #{name,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      head_url = #{headUrl,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      is_deleted = #{isDeleted,jdbcType=TINYINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
